@@ -22,4 +22,4 @@ while continuer:
 
 pygame.quit()
 
-# Ceci est un texte supplementaire
+print("Hello world !")
