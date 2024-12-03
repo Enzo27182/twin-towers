@@ -22,3 +22,4 @@ while continuer:
 
 pygame.quit()
 
+print("Hello world !")
