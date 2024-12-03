@@ -1,27 +1,15 @@
-
 import pygame
 from pygame.locals import *
-from random import randint
 
+# initialisation de pygame
 pygame.init()
-LARGEUR = 600
-HAUTEUR = 600
-fenetre = pygame.display.set_mode((LARGEUR, HAUTEUR))
+fenetre = pygame.display.set_mode((800, 600), FULLSCREEN)
 clock = pygame.time.Clock()
-continuer = True
+listes_des_srpites = pygame.sprite.LayeredUpdates()
 
-
-while continuer:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            continuer = False
-
-
-    pygame.display.flip()
-    fenetre.fill((0, 0, 0))
-    clock.tick(60)
-
-pygame.quit()
-
-print("Hello world !")
-
+# classes
+class Avion(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load("avion.png").convert_alpha()
+        self.rect = self.image.get_rect()
