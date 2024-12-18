@@ -11,7 +11,6 @@ pygame.init()
 fenetre = pygame.display.set_mode((800, 600),FULLSCREEN)
 clock = pygame.time.Clock()
 liste_des_sprites = pygame.sprite.LayeredUpdates()
-liste_batiments = pygame.sprite.LayeredUpdates()
 
 # classes
 class Fond(pygame.sprite.Sprite):
@@ -64,6 +63,14 @@ class Batiment(pygame.sprite.Sprite):
         self.rect.x = 550
         self.rect.y = 300
 
+#self.rect.y = fenetre.get_rect().bottom - self.rect.height
+
+    def deplacement(self):
+        self.rect.x -= 1
+
+
+
+
 
 # creation des sprites
 fond = Fond()
@@ -78,6 +85,7 @@ batiment = Batiment()
 # ajout des sprites a la liste
 
 liste_des_sprites.add(fond)
+
 for nuage in nuages:
     liste_des_sprites.add(nuage)
 liste_des_sprites.add(avion)
@@ -101,6 +109,7 @@ while continuer:
             nuage.kill()
             Nuages(nom_nuages[random.randint(0,2)], fenetre.get_rect().centery).add(liste_des_sprites)
     avion.voler()
+    batiment.deplacement()
 
     # affichage fenetre
     liste_des_sprites.draw(fenetre)
