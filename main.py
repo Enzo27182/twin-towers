@@ -1,16 +1,15 @@
-from random import random
-
 import pygame
-from pygame.key import get_mods
 from pygame.locals import *
 import random
 
 # initialisation de pygame
 pygame.init()
 
-fenetre = pygame.display.set_mode((800, 600),FULLSCREEN)
+fenetre = pygame.display.set_mode((800, 600)) #FULLSCREEN
 clock = pygame.time.Clock()
 liste_des_sprites = pygame.sprite.LayeredUpdates()
+liste_des_batiments = pygame.sprite.LayeredUpdates()
+liste_des_nuages = pygame.sprite.LayeredUpdates()
 
 # classes
 class Fond(pygame.sprite.Sprite):
@@ -30,7 +29,7 @@ class Nuages(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load(nom_image).convert_alpha()
         self.rect = self.image.get_rect()
-        self.rect.x = 100
+        self.rect.x = fenetre.get_rect().right
         self.rect.y = y
         self.vitesse = - random.randint(1,4)
 
@@ -60,16 +59,13 @@ class Batiment(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load("batiment.png").convert_alpha()
         self.rect = self.image.get_rect()
-        self.rect.x = 550
+        self.rect.x = fenetre.get_rect().right
         self.rect.y = 300
-
-#self.rect.y = fenetre.get_rect().bottom - self.rect.height
+        self.vitesse = 5
+        #self.rect.y = fenetre.get_rect().bottom - self.rect.height
 
     def deplacement(self):
-        self.rect.x -= 1
-
-
-
+        self.rect.x -= self.vitesse
 
 
 # creation des sprites
@@ -77,7 +73,7 @@ fond = Fond()
 nom_nuages = ["nuage1.png", "nuage2.png", "nuage3.png"]
 nuages = []
 for nuage in nom_nuages:
-    nuages.append(Nuages(nuage, random.randint(0, 100)))
+    nuages.append(Nuages(nuage, 100))
 avion = Avion()
 batiment = Batiment()
 
@@ -88,26 +84,30 @@ liste_des_sprites.add(fond)
 
 for nuage in nuages:
     liste_des_sprites.add(nuage)
+    liste_des_nuages.add(nuage)
+liste_des_sprites.add(batiment)
+liste_des_batiments.add(batiment)
 liste_des_sprites.add(avion)
-liste_batiments.add(batiment)
 
-#batiment.rect.x -= 5
 pygame.key.set_repeat(1,0)
 continuer = True
 while continuer:
     for event in pygame.event.get():
-        if event.type == QUIT:
-            continuer = False
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE:
                 continuer = False
             if event.key == K_SPACE:
                 avion.monter()
-    for nuage in nuages:
+    for nuage in liste_des_nuages:
         nuage.deplacer()
         if nuage.rect.right < 0:
             nuage.kill()
-            Nuages(nom_nuages[random.randint(0,2)], fenetre.get_rect().centery).add(liste_des_sprites)
+            nuage.remove(liste_des_sprites)
+            nuage.remove(liste_des_nuages)
+        while len(liste_des_nuages) < 3:
+            cloud = Nuages(nom_nuages[random.randint(0,2)], 100)
+            cloud.add(liste_des_sprites)
+            cloud.add(liste_des_nuages)
     avion.voler()
     batiment.deplacement()
 
@@ -115,12 +115,16 @@ while continuer:
     liste_des_sprites.draw(fenetre)
     pygame.display.flip()
     clock.tick(60)
-    if avion.rect.bottom > fenetre.get_rect().bottom:
+    if avion.rect.bottom >= fenetre.get_rect().bottom or avion.rect.top <= 0:
         continuer = False
+    for batiment in liste_des_batiments:
+        if avion.rect.colliderect(batiment):
+            continuer = False
 quitter = False
 while not quitter:
     for event in pygame.event.get():
+        if event.type == QUIT:
+            quitter = True
         if event.type == KEYDOWN and event.key == K_ESCAPE:
             quitter = True
 pygame.quit()
-
