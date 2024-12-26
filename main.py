@@ -5,7 +5,7 @@ import random
 # initialisation de pygame
 pygame.init()
 
-fenetre = pygame.display.set_mode((800, 600),FULLSCREEN)
+fenetre = pygame.display.set_mode((800, 600)) #FULLSCREEN
 clock = pygame.time.Clock()
 liste_des_sprites = pygame.sprite.LayeredUpdates()
 liste_des_batiments = pygame.sprite.LayeredUpdates()
@@ -93,14 +93,12 @@ pygame.key.set_repeat(1,0)
 continuer = True
 while continuer:
     for event in pygame.event.get():
-        if event.type == QUIT:
-            continuer = False
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE:
                 continuer = False
             if event.key == K_SPACE:
                 avion.monter()
-    for nuage in nuages:
+    for nuage in liste_des_nuages:
         nuage.deplacer()
         if nuage.rect.right < 0:
             nuage.kill()
@@ -117,12 +115,16 @@ while continuer:
     liste_des_sprites.draw(fenetre)
     pygame.display.flip()
     clock.tick(60)
-    if avion.rect.bottom > fenetre.get_rect().bottom:
+    if avion.rect.bottom >= fenetre.get_rect().bottom or avion.rect.top <= 0:
         continuer = False
+    for batiment in liste_des_batiments:
+        if avion.rect.colliderect(batiment):
+            continuer = False
 quitter = False
 while not quitter:
     for event in pygame.event.get():
+        if event.type == QUIT:
+            quitter = True
         if event.type == KEYDOWN and event.key == K_ESCAPE:
             quitter = True
 pygame.quit()
-
