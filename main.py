@@ -77,11 +77,11 @@ for nuage in nom_nuages:
 avion = Avion()
 batiment = Batiment()
 
+# creation des variables de stockage
+dernier_batiment = batiment
 
 # ajout des sprites a la liste
-
 liste_des_sprites.add(fond)
-
 for nuage in nuages:
     liste_des_sprites.add(nuage)
     liste_des_nuages.add(nuage)
@@ -89,7 +89,9 @@ liste_des_sprites.add(batiment)
 liste_des_batiments.add(batiment)
 liste_des_sprites.add(avion)
 
+# parametrage du calvier
 pygame.key.set_repeat(1,0)
+
 continuer = True
 while continuer:
     for event in pygame.event.get():
@@ -98,16 +100,30 @@ while continuer:
                 continuer = False
             if event.key == K_SPACE:
                 avion.monter()
+    if avion.rect.bottom >= fenetre.get_rect().bottom or avion.rect.top <= 0:
+        continuer = False
     for nuage in liste_des_nuages:
         nuage.deplacer()
         if nuage.rect.right < 0:
-            nuage.kill()
             nuage.remove(liste_des_sprites)
             nuage.remove(liste_des_nuages)
+            nuage.kill()
         while len(liste_des_nuages) < 3:
             cloud = Nuages(nom_nuages[random.randint(0,2)], 100)
             cloud.add(liste_des_sprites)
             cloud.add(liste_des_nuages)
+    for batiment in liste_des_batiments:
+        if avion.rect.colliderect(batiment):
+            continuer = False
+        if batiment.rect.right < 0:
+            batiment.remove(liste_des_sprites)
+            batiment.remove(liste_des_batiments)
+            batiment.kill()
+    if dernier_batiment.rect.right == fenetre.get_rect().centerx:
+        batiment = Batiment()
+        dernier_batiment = batiment
+        liste_des_sprites.add(batiment)
+        liste_des_batiments.add(batiment)
     avion.voler()
     batiment.deplacement()
 
@@ -115,11 +131,7 @@ while continuer:
     liste_des_sprites.draw(fenetre)
     pygame.display.flip()
     clock.tick(60)
-    if avion.rect.bottom >= fenetre.get_rect().bottom or avion.rect.top <= 0:
-        continuer = False
-    for batiment in liste_des_batiments:
-        if avion.rect.colliderect(batiment):
-            continuer = False
+
 quitter = False
 while not quitter:
     for event in pygame.event.get():
