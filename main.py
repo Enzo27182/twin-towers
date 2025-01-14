@@ -50,7 +50,7 @@ class Avion(pygame.sprite.Sprite):
 
     def voler(self):
         self.rect.y += self.vitesse
-        self.vitesse += 0.1
+        self.vitesse += 0.2
 
     def monter(self):
         self.vitesse = -5
@@ -62,11 +62,18 @@ class Batiment(pygame.sprite.Sprite):
         self.image = pygame.image.load("batiment.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = fenetre.get_rect().right
-        self.rect.y = 300
+        self.rect.y = random.randint(300,fenetre.get_rect().bottom)
         self.vitesse = 5
 
     def deplacer(self):
         self.rect.x -= self.vitesse
+
+
+class Batiments_renverses(Batiment):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load("batiment_renversé.png").convert_alpha()
+        self.rect.y = (batiment.rect.y - (avion.rect.height + 200) - self.rect.height)
 
 
 class Gameover(pygame.sprite.Sprite):
@@ -114,6 +121,7 @@ for nuage in nom_nuages:
     nuages.append(Nuages(nuage, 100))
 avion = Avion()
 batiment = Batiment()
+batiment_renverse = Batiments_renverses()
 
 # ajout des sprites a la liste
 liste_des_sprites.add(fond)
@@ -123,6 +131,8 @@ for nuage in nuages:
 liste_des_sprites.add(batiment)
 liste_des_batiments.add(batiment)
 liste_des_sprites.add(avion)
+liste_des_sprites.add(batiment_renverse)
+liste_des_batiments.add(batiment_renverse)
 
 # parametrage du calvier
 pygame.key.set_repeat(1,0)
