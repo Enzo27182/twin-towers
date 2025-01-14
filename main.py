@@ -15,6 +15,18 @@ liste_des_sprites_de_resume = pygame.sprite.LayeredUpdates()
 temps_initial = time.time()
 
 # classes
+class instructions():
+    def __init__(self):
+        self.height = fenetre.get_rect().height
+        
+
+
+class ecriture():
+    def __init__(self):
+        self.police = pygame.font.Font(None, 14)
+
+
+
 class Fond(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -119,7 +131,7 @@ liste_des_sprites.add(avion)
 liste_des_sprites.add(batiment_renverse)
 liste_des_batiments.add(batiment_renverse)
 
-# parametrage du calvier
+# parametrage du clavier
 pygame.key.set_repeat(1,0)
 
 continuer = True
