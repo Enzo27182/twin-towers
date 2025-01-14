@@ -12,6 +12,7 @@ liste_des_sprites = pygame.sprite.LayeredUpdates()
 liste_des_batiments = pygame.sprite.LayeredUpdates()
 liste_des_nuages = pygame.sprite.LayeredUpdates()
 liste_des_sprites_de_resume = pygame.sprite.LayeredUpdates()
+temps_initial = time.time()
 
 # classes
 class Fond(pygame.sprite.Sprite):
@@ -72,8 +73,8 @@ class Batiment(pygame.sprite.Sprite):
 class Gameover(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.police = pygame.font.Font("BRADHITC.TTF", 108)
-        self.image = self.police.render("Game Over !", True, "darkred", None)
+        self.police = pygame.font.Font("LATINWD.TTF", 60)
+        self.image = self.police.render("Game Over !", True, "royalblue4", None)
         self.rect = self.image.get_rect()
         self.rect.centerx = fenetre.get_rect().centerx
         self.rect.centery = fenetre.get_rect().centery
@@ -82,27 +83,11 @@ class Gameover(pygame.sprite.Sprite):
 class Score(pygame.sprite.Sprite):
     def __init__(self, y):
         super().__init__()
-        self.score = 0
-        self.police = pygame.font.Font("BRADHITC.TTF", int(108 / 2))
-        self.image = self.police.render(f"Score : {self.score}", True, "darkred", None)
+        self.score = int(time.time() - temps_initial) 
+        self.police = pygame.font.Font("LATINWD.TTF", 40)
+        self.image = self.police.render(f"Score : {self.score}", True, "royalblue4", None)
         self.rect = self.image.get_rect()
         self.rect.centerx = fenetre.get_rect().centerx
-        self.rect.y = y
-
-
-class RectangleDeFond(pygame.sprite.Sprite):
-    def __init__(self, x, y, longueur, hauteur):
-        super().__init__()
-        self.longueur = longueur
-        self.hauteur = hauteur
-        self.image = pygame.Surface((self.longueur, self.hauteur))
-        self.image.fill("black")
-        self.image.set_colorkey("black")
-        self.rectangle = pygame.Rect(0, 0, self.longueur, self.hauteur)
-        pygame.draw.rect(self.image, "antiquewhite", self.rectangle, 0)
-        self.image.convert_alpha()
-        self.rect = self.image.get_rect()
-        self.rect.x = x
         self.rect.y = y
 
 
@@ -159,6 +144,7 @@ while continuer:
             liste_des_batiments.remove(batiment)
             batiment.kill()
     avion.voler()
+
     # affichage fenetre
     liste_des_sprites.draw(fenetre)
     pygame.display.flip()
@@ -167,10 +153,8 @@ while continuer:
 # creation des sprites de resume de jeu
 gameover = Gameover()
 score = Score(gameover.rect.bottom)
-rectangle_de_fond = RectangleDeFond(gameover.rect.x, gameover.rect.y, gameover.rect.width, gameover.rect.height + score.rect.height)
 
 # ajout des sprites a la liste des sprites de resume
-liste_des_sprites_de_resume.add(rectangle_de_fond)
 liste_des_sprites_de_resume.add(gameover)
 liste_des_sprites_de_resume.add(score)
 
