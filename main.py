@@ -16,6 +16,7 @@ liste_des_sprites_de_resume = pygame.sprite.LayeredUpdates()
 temps_initial = time.time()
 
 # classes
+
 class Instructions(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -86,11 +87,11 @@ class Batiment(pygame.sprite.Sprite):
         self.rect.x -= self.vitesse
 
 
-class Batiments_renverses(Batiment):
-    def __init__(self):
+class BatimentsRenverses(Batiment):
+    def __init__(self, batiment_du_dessous):
         super().__init__()
         self.image = pygame.image.load("batiment_renversé.png").convert_alpha()
-        self.rect.y = (batiment.rect.y - (avion.rect.height + 200) - self.rect.height)
+        self.rect.y = batiment_du_dessous.rect.y - self.rect.height - 200
 
 
 class Gameover(pygame.sprite.Sprite):
@@ -121,21 +122,24 @@ nom_nuages = ["nuage1.png", "nuage2.png", "nuage3.png"]
 nuages = []
 for nuage in nom_nuages:
     nuages.append(Nuages(nuage, 100))
-avion = Avion()
 batiment = Batiment()
-batiment_renverse = Batiments_renverses()
+batiment_renverse = BatimentsRenverses(batiment)
+avion = Avion()
 
 # ajout des sprites a la liste
 liste_des_instructions.add(regles)
 liste_des_sprites.add(fond)
+
 for nuage in nuages:
     liste_des_sprites.add(nuage)
     liste_des_nuages.add(nuage)
-liste_des_sprites.add(batiment)
+
 liste_des_batiments.add(batiment)
-liste_des_sprites.add(avion)
-liste_des_sprites.add(batiment_renverse)
+liste_des_sprites.add(batiment)
 liste_des_batiments.add(batiment_renverse)
+liste_des_sprites.add(batiment_renverse)
+
+liste_des_sprites.add(avion)
 
 # parametrage du clavier
 pygame.key.set_repeat(1,0)
@@ -169,18 +173,24 @@ while continuer:
             nouveau_nuage = Nuages(nom_nuages[random.randint(0,2)], 100)
             liste_des_sprites.add(nouveau_nuage)
             liste_des_nuages.add(nouveau_nuage)
-    for batiment in liste_des_batiments:
+
+    # gestion des batiment
+    for bat in liste_des_batiments:
         batiment.deplacer()
-        if avion.rect.colliderect(batiment):
+        batiment_renverse.deplacer()
+        if avion.rect.colliderect(bat.rect):
             continuer = False
-        if batiment.rect.right <= fenetre.get_rect().centerx: ### a modifier
+        """
+        if bat.rect.x == fenetre.get_rect().centerx:
             nouveau_batiment = Batiment()
-            liste_des_sprites.add(nouveau_batiment)
+            nouveau_batiment_renverse = BatimentsRenverses(nouveau_batiment)
             liste_des_batiments.add(nouveau_batiment)
-        if batiment.rect.right < 0:
-            liste_des_sprites.remove(batiment)
-            liste_des_batiments.remove(batiment)
-            batiment.kill()
+            liste_des_sprites.add(nouveau_batiment)
+            liste_des_batiments.add(nouveau_batiment_renverse)
+            liste_des_sprites.add(nouveau_batiment_renverse)"""
+        if bat.rect.right < 0:
+            bat.kill()
+
     avion.voler()
 
     # affichage fenetre
