@@ -15,18 +15,6 @@ liste_des_sprites_de_resume = pygame.sprite.LayeredUpdates()
 temps_initial = time.time()
 
 # classes
-class Instructions:
-    def __init__(self):
-        self.height = fenetre.get_rect().height
-        
-
-
-class Ecriture:
-    def __init__(self):
-        self.police = pygame.font.Font(None, 14)
-
-
-
 class Fond(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -40,16 +28,16 @@ class Fond(pygame.sprite.Sprite):
 
 
 class Nuages(pygame.sprite.Sprite):
-    def __init__(self, nom_image, y):
+    def __init__(self, nom_image):
         super().__init__()
         self.image = pygame.image.load(nom_image).convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = fenetre.get_rect().right
-        self.rect.y = y
-        self.vitesse = - random.randint(1,4)
+        self.rect.y = random.randint(50, 200)
+        self.vitesse = random.randint(1,4)
 
     def deplacer(self):
-        self.rect.x += self.vitesse
+        self.rect.x -= self.vitesse
 
 
 class Avion(pygame.sprite.Sprite):
@@ -75,7 +63,7 @@ class Batiment(pygame.sprite.Sprite):
         self.image = pygame.image.load("batiment.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = fenetre.get_rect().right
-        self.rect.y = random.randint(300,fenetre.get_rect().bottom)
+        self.rect.y = random.randint(200,fenetre.get_rect().bottom)
         self.vitesse = 5
 
     def deplacer(self):
@@ -86,7 +74,7 @@ class BatimentsRenverses(Batiment):
     def __init__(self, batiment_du_dessous):
         super().__init__()
         self.image = pygame.image.load("batiment_renversé.png").convert_alpha()
-        self.rect.y = batiment_du_dessous.rect.y - self.rect.height - 200
+        self.rect.bottom = batiment_du_dessous.rect.y - 250
 
 
 class Gameover(pygame.sprite.Sprite):
@@ -115,7 +103,7 @@ fond = Fond()
 nom_nuages = ["nuage1.png", "nuage2.png", "nuage3.png"]
 nuages = []
 for nuage in nom_nuages:
-    nuages.append(Nuages(nuage, 100))
+    nuages.append(Nuages(nuage))
 batiment = Batiment()
 batiment_renverse = BatimentsRenverses(batiment)
 avion = Avion()
@@ -123,16 +111,16 @@ avion = Avion()
 # ajout des sprites a la liste
 liste_des_sprites.add(fond)
 
-for nuage in nuages:
-    liste_des_sprites.add(nuage)
-    liste_des_nuages.add(nuage)
-
 liste_des_batiments.add(batiment)
 liste_des_sprites.add(batiment)
 liste_des_batiments.add(batiment_renverse)
 liste_des_sprites.add(batiment_renverse)
 
 liste_des_sprites.add(avion)
+
+for nuage in nuages:
+    liste_des_sprites.add(nuage)
+    liste_des_nuages.add(nuage)
 
 # parametrage du clavier
 pygame.key.set_repeat(1,0)
@@ -153,26 +141,25 @@ while continuer:
             liste_des_sprites.remove(nuage)
             liste_des_nuages.remove(nuage)
             nuage.kill()
-            nouveau_nuage = Nuages(nom_nuages[random.randint(0,2)], 100)
+            nouveau_nuage = Nuages(nom_nuages[random.randint(0,2)])
             liste_des_sprites.add(nouveau_nuage)
             liste_des_nuages.add(nouveau_nuage)
 
-    # gestion des batiment
+    # gestion des batiments
     for bat in liste_des_batiments:
-        batiment.deplacer()
-        batiment_renverse.deplacer()
+        bat.deplacer()
         if avion.rect.colliderect(bat.rect):
             continuer = False
-        """
-        if bat.rect.x == fenetre.get_rect().centerx:
+        if bat.rect.right < 0:
+            liste_des_batiments.remove(bat)
+            liste_des_sprites.remove(bat)
+            bat.kill()
             nouveau_batiment = Batiment()
             nouveau_batiment_renverse = BatimentsRenverses(nouveau_batiment)
             liste_des_batiments.add(nouveau_batiment)
             liste_des_sprites.add(nouveau_batiment)
             liste_des_batiments.add(nouveau_batiment_renverse)
-            liste_des_sprites.add(nouveau_batiment_renverse)"""
-        if bat.rect.right < 0:
-            bat.kill()
+            liste_des_sprites.add(nouveau_batiment_renverse)
 
     avion.voler()
 
