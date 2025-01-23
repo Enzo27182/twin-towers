@@ -9,19 +9,34 @@ pygame.init()
 fenetre = pygame.display.set_mode((800, 600)) #FULLSCREEN
 clock = pygame.time.Clock()
 liste_des_sprites = pygame.sprite.LayeredUpdates()
+liste_des_instructions = pygame.sprite.LayeredUpdates()
 liste_des_batiments = pygame.sprite.LayeredUpdates()
 liste_des_nuages = pygame.sprite.LayeredUpdates()
 liste_des_sprites_de_resume = pygame.sprite.LayeredUpdates()
 temps_initial = time.time()
 
 # classes
+class Instructions(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        fenetre.fill("white")
+        self.police = pygame.font.Font("LATINWD.TTF", 12)
+        instructions = """Birdy plane
+                                  Instructions:
+                                  1.Appuyez sur espace pour faire voler l'avion
+                                  2.Appuyez sur escape pour quitter le jeu
+                                  3.Appuyez sur espace pour commencer à jouer! """
+        self.image = self.police.render(instructions, True,"royalblue4", None)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = fenetre.get_rect().centerx
+        self.rect.centery = fenetre.get_rect().centery
+
+
 class Fond(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("fond.png").convert_alpha()
-
         self.image = pygame.transform.scale_by(self.image, 0.75)
-
         self.rect = self.image.get_rect()
         self.rect.x = 0
         self.rect.y = 0
@@ -99,6 +114,7 @@ class Score(pygame.sprite.Sprite):
 
 
 # creation des sprites
+regles = Instructions()
 fond = Fond()
 nom_nuages = ["nuage1.png", "nuage2.png", "nuage3.png"]
 nuages = []
@@ -109,6 +125,7 @@ batiment_renverse = BatimentsRenverses(batiment)
 avion = Avion()
 
 # ajout des sprites a la liste
+liste_des_instructions.add(regles)
 liste_des_sprites.add(fond)
 
 liste_des_batiments.add(batiment)
@@ -124,6 +141,14 @@ for nuage in nuages:
 
 # parametrage du clavier
 pygame.key.set_repeat(1,0)
+instruction = True
+while instruction:
+    for event in pygame.event.get():
+        if event.type == KEYDOWN:
+            if event.key == K_SPACE:
+                instruction = False
+    liste_des_instructions.draw(fenetre)
+    pygame.display.flip()
 
 continuer = True
 while continuer:
