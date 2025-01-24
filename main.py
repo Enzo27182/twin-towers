@@ -21,11 +21,8 @@ class Instructions(pygame.sprite.Sprite):
         super().__init__()
         fenetre.fill("white")
         self.police = pygame.font.Font("LATINWD.TTF", 12)
-        instructions = """Birdy plane
-                                  Instructions:
-                                  1.Appuyez sur espace pour faire voler l'avion
-                                  2.Appuyez sur escape pour quitter le jeu
-                                  3.Appuyez sur espace pour commencer à jouer! """
+        instructions = ("Birdy plane\nInstructions:\n1.Appuyez sur espace pour faire voler l'avion\n"
+                        "2.Appuyez sur escape pour quitter le jeu\n3.Appuyez sur espace pour commencer à jouer!")
         self.image = self.police.render(instructions, True,"royalblue4", None)
         self.rect = self.image.get_rect()
         self.rect.centerx = fenetre.get_rect().centerx
