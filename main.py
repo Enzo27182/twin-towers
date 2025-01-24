@@ -11,6 +11,7 @@ clock = pygame.time.Clock()
 liste_des_sprites = pygame.sprite.LayeredUpdates()
 liste_des_instructions = pygame.sprite.LayeredUpdates()
 liste_des_batiments = pygame.sprite.LayeredUpdates()
+liste_des_batiments_renverses = pygame.sprite.LayeredUpdates()
 liste_des_nuages = pygame.sprite.LayeredUpdates()
 liste_des_sprites_de_resume = pygame.sprite.LayeredUpdates()
 temps_initial = time.time()
@@ -127,7 +128,7 @@ liste_des_sprites.add(fond)
 
 liste_des_batiments.add(batiment)
 liste_des_sprites.add(batiment)
-liste_des_batiments.add(batiment_renverse)
+liste_des_batiments_renverses.add(batiment_renverse)
 liste_des_sprites.add(batiment_renverse)
 
 liste_des_sprites.add(avion)
@@ -168,20 +169,19 @@ while continuer:
             liste_des_nuages.add(nouveau_nuage)
 
     # gestion des batiments
-    for bat in liste_des_batiments:
+    for bat in liste_des_batiments and liste_des_batiments_renverses:
         bat.deplacer()
         if avion.rect.colliderect(bat.rect):
             continuer = False
-        if bat.rect.right < 0:
-            liste_des_batiments.remove(bat)
-            liste_des_sprites.remove(bat)
-            bat.kill()
-            nouveau_batiment = Batiment()
-            nouveau_batiment_renverse = BatimentsRenverses(nouveau_batiment)
-            liste_des_batiments.add(nouveau_batiment)
-            liste_des_sprites.add(nouveau_batiment)
-            liste_des_batiments.add(nouveau_batiment_renverse)
-            liste_des_sprites.add(nouveau_batiment_renverse)
+    for bat in liste_des_batiments:
+        liste_des_batiments.remove(bat)
+        liste_des_sprites.remove(bat)
+        bat.kill()
+        nouveau_batiment = Batiment()
+        liste_des_batiments.add(nouveau_batiment)
+        liste_des_sprites.add(nouveau_batiment)
+    for bat in liste_des_batiments_renverses:
+        
 
     avion.voler()
 
