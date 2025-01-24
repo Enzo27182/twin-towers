@@ -1,3 +1,5 @@
+from turtledemo.sorting_animate import instructions1
+
 import pygame
 from pygame.locals import *
 import random
@@ -21,12 +23,9 @@ class Instructions(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         fenetre.fill("white")
-        self.police = pygame.font.Font("LATINWD.TTF", 12)
-        instructions = ("Birdy plane\n",
-                 "1.Appuyez sur espace pour faire voler l'avion\n",
-                 "2.Appuyez sur escape pour quitter le jeu\n",
-                 "3.Appuyez sur espace pour commencer à jouer!\n")
-        self.image = self.police.render(instructions, True,"royalblue4", None)
+        self.police = pygame.font.Font("LATINWD.TTF", 20)
+        self.texte = "Appuyez sur espace pour commencer à jouer !"
+        self.image = self.police.render(self.texte, True, "royalblue4", None)
         self.rect = self.image.get_rect()
         self.rect.centerx = fenetre.get_rect().centerx
         self.rect.centery = fenetre.get_rect().centery
@@ -121,7 +120,8 @@ nuages = []
 for nuage in nom_nuages:
     nuages.append(Nuages(nuage))
 batiment = Batiment()
-batiment_renverse = BatimentsRenverses(batiment)
+"""
+batiment_renverse = BatimentsRenverses(batiment)"""
 avion = Avion()
 
 # ajout des sprites a la liste
@@ -130,8 +130,9 @@ liste_des_sprites.add(fond)
 
 liste_des_batiments.add(batiment)
 liste_des_sprites.add(batiment)
+"""
 liste_des_batiments_renverses.add(batiment_renverse)
-liste_des_sprites.add(batiment_renverse)
+liste_des_sprites.add(batiment_renverse)"""
 
 liste_des_sprites.add(avion)
 
@@ -141,22 +142,32 @@ for nuage in nuages:
 
 # parametrage du clavier
 pygame.key.set_repeat(1,0)
+
+# variables pour la continuation du jeu
 instruction = True
+continuer = True
+quitter = False
+
+# affichage des regles
 while instruction:
-    
     for event in pygame.event.get():
+        if event.type == QUIT:
+            instruction = False
+            continuer = False
+            quitter = True
         if event.type == KEYDOWN:
             if event.key == K_SPACE:
                 instruction = False
     liste_des_instructions.draw(fenetre)
     pygame.display.flip()
 
-continuer = True
+# boucle de jeu
 while continuer:
     for event in pygame.event.get():
+        if event.type == QUIT:
+            continuer = False
+            quitter = True
         if event.type == KEYDOWN:
-            if event.key == K_ESCAPE:
-                continuer = False
             if event.key == K_SPACE:
                 avion.monter()
     if avion.rect.bottom >= fenetre.get_rect().bottom or avion.rect.top <= 0:
@@ -172,19 +183,17 @@ while continuer:
             liste_des_nuages.add(nouveau_nuage)
 
     # gestion des batiments
-    for bat in liste_des_batiments and liste_des_batiments_renverses:
+    for bat in liste_des_batiments:
         bat.deplacer()
         if avion.rect.colliderect(bat.rect):
             continuer = False
-    for bat in liste_des_batiments:
-        liste_des_batiments.remove(bat)
-        liste_des_sprites.remove(bat)
-        bat.kill()
-        nouveau_batiment = Batiment()
-        liste_des_batiments.add(nouveau_batiment)
-        liste_des_sprites.add(nouveau_batiment)
-    for bat in liste_des_batiments_renverses:
-        
+    for bat_renv in liste_des_batiments_renverses:
+        bat_renv.deplacer()
+        if avion.rect.colliderect(bat_renv.rect):
+            continuer = False
+    nouveau_batiment_renverse = BatimentsRenverses(list(liste_des_batiments)[-1])
+    liste_des_batiments_renverses.add(nouveau_batiment_renverse)
+    liste_des_sprites.add(nouveau_batiment_renverse)
 
     avion.voler()
 
@@ -201,7 +210,7 @@ score = Score(gameover.rect.bottom)
 liste_des_sprites_de_resume.add(gameover)
 liste_des_sprites_de_resume.add(score)
 
-quitter = False
+# figeage de la fenetre
 while not quitter:
     for event in pygame.event.get():
         if event.type == QUIT:
