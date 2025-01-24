@@ -22,8 +22,10 @@ class Instructions(pygame.sprite.Sprite):
         super().__init__()
         fenetre.fill("white")
         self.police = pygame.font.Font("LATINWD.TTF", 12)
-        instructions = ("Birdy plane\nInstructions:\n1.Appuyez sur espace pour faire voler l'avion\n"
-                        "2.Appuyez sur escape pour quitter le jeu\n3.Appuyez sur espace pour commencer à jouer!")
+        instructions = ("Birdy plane\n",
+                 "1.Appuyez sur espace pour faire voler l'avion\n",
+                 "2.Appuyez sur escape pour quitter le jeu\n",
+                 "3.Appuyez sur espace pour commencer à jouer!\n")
         self.image = self.police.render(instructions, True,"royalblue4", None)
         self.rect = self.image.get_rect()
         self.rect.centerx = fenetre.get_rect().centerx
@@ -141,6 +143,7 @@ for nuage in nuages:
 pygame.key.set_repeat(1,0)
 instruction = True
 while instruction:
+    
     for event in pygame.event.get():
         if event.type == KEYDOWN:
             if event.key == K_SPACE:
