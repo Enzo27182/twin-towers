@@ -1,4 +1,4 @@
-from turtledemo.sorting_animate import instructions1
+from time import sleep
 
 import pygame
 from pygame.locals import *
@@ -48,7 +48,7 @@ class Nuages(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = fenetre.get_rect().right
         self.rect.y = random.randint(50, 200)
-        self.vitesse = random.randint(1,4)
+        self.vitesse = random.randint(1,3)
 
     def deplacer(self):
         self.rect.x -= self.vitesse
@@ -72,21 +72,21 @@ class Avion(pygame.sprite.Sprite):
 
 
 class Batiment(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, vitesse):
         super().__init__()
         self.image = pygame.image.load("batiment.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = fenetre.get_rect().right
         self.rect.y = random.randint(200,fenetre.get_rect().bottom)
-        self.vitesse = 5
+        self.vitesse = vitesse
 
     def deplacer(self):
         self.rect.x -= self.vitesse
 
 
 class BatimentsRenverses(Batiment):
-    def __init__(self, batiment_du_dessous):
-        super().__init__()
+    def __init__(self, vitesse, batiment_du_dessous):
+        super().__init__(vitesse)
         self.image = pygame.image.load("batiment_renversé.png").convert_alpha()
         self.rect.bottom = batiment_du_dessous.rect.y - 250
 
@@ -104,13 +104,15 @@ class Gameover(pygame.sprite.Sprite):
 class Score(pygame.sprite.Sprite):
     def __init__(self, y):
         super().__init__()
-        self.score = int(time.time() - temps_initial) 
+        self.score = int((time.time() - temps_initial)/5)
         self.police = pygame.font.Font("LATINWD.TTF", 40)
         self.image = self.police.render(f"Score : {self.score}", True, "royalblue4", None)
         self.rect = self.image.get_rect()
         self.rect.centerx = fenetre.get_rect().centerx
         self.rect.y = y
 
+# vitesse initiale de tous les batiments
+v = 5
 
 # creation des sprites
 regles = Instructions()
@@ -119,9 +121,8 @@ nom_nuages = ["nuage1.png", "nuage2.png", "nuage3.png"]
 nuages = []
 for nuage in nom_nuages:
     nuages.append(Nuages(nuage))
-batiment = Batiment()
-"""
-batiment_renverse = BatimentsRenverses(batiment)"""
+batiment = Batiment(v)
+batiment_renverse = BatimentsRenverses(v, batiment)
 avion = Avion()
 
 # ajout des sprites a la liste
@@ -130,9 +131,8 @@ liste_des_sprites.add(fond)
 
 liste_des_batiments.add(batiment)
 liste_des_sprites.add(batiment)
-"""
 liste_des_batiments_renverses.add(batiment_renverse)
-liste_des_sprites.add(batiment_renverse)"""
+liste_des_sprites.add(batiment_renverse)
 
 liste_des_sprites.add(avion)
 
@@ -182,18 +182,32 @@ while continuer:
             liste_des_sprites.add(nouveau_nuage)
             liste_des_nuages.add(nouveau_nuage)
 
+    # augmentattion de la vitesse de tous les batiments
+    v += 0.001
+
     # gestion des batiments
     for bat in liste_des_batiments:
         bat.deplacer()
         if avion.rect.colliderect(bat.rect):
             continuer = False
+        if bat.rect.right < 0:
+            liste_des_batiments.remove(bat)
+            liste_des_sprites.remove(bat)
+            bat.kill()
+            nouveau_batiment = Batiment(v)
+            liste_des_batiments.add(nouveau_batiment)
+            liste_des_sprites.add(nouveau_batiment)
     for bat_renv in liste_des_batiments_renverses:
         bat_renv.deplacer()
         if avion.rect.colliderect(bat_renv.rect):
             continuer = False
-    nouveau_batiment_renverse = BatimentsRenverses(list(liste_des_batiments)[-1])
-    liste_des_batiments_renverses.add(nouveau_batiment_renverse)
-    liste_des_sprites.add(nouveau_batiment_renverse)
+        if bat_renv.rect.right < 0:
+            liste_des_batiments_renverses.remove(bat_renv)
+            liste_des_sprites.remove(bat_renv)
+            bat_renv.kill()
+            nouveau_batiment_renverse = BatimentsRenverses(v, nouveau_batiment)
+            liste_des_batiments_renverses.add(nouveau_batiment_renverse)
+            liste_des_sprites.add(nouveau_batiment_renverse)
 
     avion.voler()
 
